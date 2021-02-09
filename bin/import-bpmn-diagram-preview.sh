@@ -4,18 +4,8 @@ set -eu
 workspace=${1}
 echo $workspace
 
-latestDefinitionAssetId=$(curl https://api.github.com/repos/hmcts/civil-damages-camunda-bpmn-definition/releases/latest | docker run --rm --interactive stedolan/jq '.assets[] | .id')
-
-curl -L \
-  -H "Accept: application/octet-stream" \
-  --output "$(realpath $workspace)/civil-damages-camunda-bpmn-definition.zip" \
-  https://api.github.com/repos/hmcts/civil-damages-camunda-bpmn-definition/releases/assets/${latestDefinitionAssetId} \
-
 filepath="$(realpath $workspace)/camunda"
 echo $filepath
-
-unzip "$(realpath $workspace)/civil-damages-camunda-bpmn-definition.zip" -d $filepath
-rm "$(realpath $workspace)/civil-damages-camunda-bpmn-definition.zip"
 
 serviceToken=$($(realpath $workspace)/civil-unspecified-docker/bin/utils/idam-lease-service-token.sh unspec_service $(docker run --rm toolbelt/oathtool --totp -b ${S2S_SECRET:-AABBCCDDEEFFGGHH}))
 

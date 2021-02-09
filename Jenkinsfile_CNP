@@ -5,7 +5,7 @@ import uk.gov.hmcts.contino.AppPipelineConfig
 
 def type = "java"
 def product = "civil-damages"
-def component = "camunda-bpmn-definition"
+def component = "camunda"
 AppPipelineConfig pipelineConf
 
 static Map<String, Object> secret(String secretName, String envVariable) {
