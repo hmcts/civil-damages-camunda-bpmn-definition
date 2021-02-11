@@ -74,8 +74,8 @@ withPipeline(type, product, component) {
     sh """
       eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
       ./bin/add-roles-preview.sh
-      ./bin/pull-latest-ccd-definition.sh
-      ./bin/pull-latest-e2e-tests.sh
+      ./bin/pull-latest-release-asset.sh civil-damages-ccd-definition civil-damages-ccd-definition.zip
+      ./bin/pull-latest-release-asset.sh civil-damages-ccd-definition civil-damages-e2e.zip
       ./bin/import-ccd-definition-preview.sh
     """
 
@@ -107,8 +107,8 @@ withPipeline(type, product, component) {
   before('smoketest:aat') {
     sh """
       ./bin/add-roles-preview.sh
-      ./bin/pull-latest-ccd-definition.sh
-      ./bin/pull-latest-e2e-tests.sh
+      ./bin/pull-latest-release-asset.sh civil-damages-ccd-definition civil-damages-ccd-definition.zip
+      ./bin/pull-latest-release-asset.sh civil-damages-ccd-definition civil-damages-e2e.zip
     """
     env.URL="https://xui-civil-damages-camunda-staging.service.core-compute-preview.internal"
     archiveCoreCaseDataDefinitions('staging')
