@@ -39,13 +39,13 @@ def archiveCoreCaseDataDefinitions(env) {
   }
 
   dir("${WORKSPACE}/build") {
-    steps.archiveArtifacts artifacts: "ccd-release-config/civil-damages-camunda--${env}.xlsx"
+    steps.archiveArtifacts artifacts: "ccd-release-config/civil-damages-camunda-${env}.xlsx"
   }
 }
 
 def uploadCoreCaseDataDefinitions(env) {
   dir("${WORKSPACE}/bin"){
-    ccdDefinitionFilePath="${WORKSPACE}/build/ccd-release-config/civil-damages-camunda--${env}.xlsx"
+    ccdDefinitionFilePath="${WORKSPACE}/build/ccd-release-config/civil-damages-camunda-${env}.xlsx"
     sh """
     eval \$(./variables/load-${env}-environment-variables.sh)
     ${WORKSPACE}/civil-unspecified-docker/bin/utils/ccd-import-definition.sh ${ccdDefinitionFilePath}

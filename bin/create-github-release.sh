@@ -36,7 +36,7 @@ uploadReleaseAsset() {
     -X POST \
     -H "Authorization: token ${token}" \
     -H "Content-Type: application/zip" \
-    -d @$assetName \
+    --data-binary @$assetName \
     https://uploads.github.com/repos/hmcts/${repoName}/releases/${releaseId}/assets?name=${assetName}
 }
 
