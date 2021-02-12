@@ -189,18 +189,26 @@ ext.libraries = [
 ]
 
 dependencies {
-
+  implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
   implementation group: 'org.camunda.bpm', name: 'camunda-external-task-client', version: '1.4.1'
   implementation group: 'org.camunda.bpm.extension.rest', name: 'camunda-rest-client-spring-boot-starter', version: '0.0.4'
-  implementation group: 'org.camunda.bpm', name: 'camunda-engine-rest-core', version: '7.14.0'
 
   testImplementation libraries.junit5
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
-
   testImplementation group: 'org.camunda.bpm.extension.springboot', name: 'camunda-bpm-spring-boot-starter-test', version: '2.2.0'
-
   testImplementation group: 'com.h2database', name: 'h2', version: '1.4.200'
+}
 
+mainClassName = 'uk.gov.hmcts.reform.unspec.Application'
+
+bootJar {
+  getArchiveFileName().set(provider {
+    'empty.jar'
+  })
+
+  manifest {
+    attributes('Implementation-Version': project.version.toString())
+  }
 }
 
 wrapper {
