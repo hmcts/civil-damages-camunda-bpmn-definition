@@ -39,8 +39,9 @@ uploadReleaseAsset() {
     --data-binary @$assetName \
     https://uploads.github.com/repos/hmcts/${repoName}/releases/${releaseId}/assets?name=${assetName}
 }
-
-zip -r -j civil-damages-camunda-bpmn-definition.zip src/main/resources/camunda
+cp -r src/main/resources/camunda camunda
+zip -r civil-damages-camunda-bpmn-definition.zip camunda
+rm -r camunda
 
 az login --identity
 releaseId=$(createNewRelease civil-damages-camunda-bpmn-definition)
