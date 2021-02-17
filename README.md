@@ -30,18 +30,21 @@ To access Camunda visit url (login and password are both `admin`):
 
 ## Camunda
 
-Camunda UI runs lon `http:localhost:9404`. You can login with:
+To spin up local instance of Camunda go to `civil-damages-sdk` repo and follow the instructions.
+
+Camunda UI runs on `http://localhost:9404`. You can login with:
 ```$xslt
 username: demo
 password: demo
 ```
 
-The REST API is available at `http:localhost:9404/engine-rest/`. The REST API documentation is available [here](https://docs.camunda.org/manual/latest/reference/rest/).
+The REST API is available at `http://localhost:9404/engine-rest/`. Documentation is available [here](https://docs.camunda.org/manual/latest/reference/rest/).
 
-To upload all bpmn diagrams via the REST API there is a script located in `./bin directory`.
-Run `./bin/import-bpmn-diagram.sh .` to upload it to Camunda. The diagram must exist within
-`src/main/resources/camunda`. By setting `CAMUNDA_BASE_URL` env variable you can also use this script to upload diagrams to
-Camunda in other environments.
+To upload all bpmn diagrams via the REST API go to`civil-damages-sdk` repo and run `./bin/import-bpmn-diagram.sh` script.
+
+The diagram must exist within `src/main/resources/camunda`.
+
+By setting `CAMUNDA_BASE_URL` env variable you can also use this script to upload diagrams to Camunda in other environments.
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
