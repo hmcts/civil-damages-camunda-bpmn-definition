@@ -13,7 +13,7 @@ do
     ${CAMUNDA_BASE_URL:-http://localhost:9404}/engine-rest/deployment/create \
     -H "Accept: application/json" \
     -H "ServiceAuthorization: Bearer ${serviceToken}" \
-    -F "deployment-name=$(basename {filename})" \
+    -F "deployment-name=$(basename ${file})" \
     -F "deploy-changed-only=true" \
     -F "file=@${filepath}/$(basename ${file})")
 
