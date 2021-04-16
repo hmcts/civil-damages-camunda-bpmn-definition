@@ -63,6 +63,9 @@ withPipeline(type, product, component) {
   onDemo {
     loadVaultSecrets(secrets)
   }
+  onIthc {
+    loadVaultSecrets(secrets)
+  }
 
   after('checkout') {
     onMaster {
@@ -87,6 +90,14 @@ withPipeline(type, product, component) {
       withSubscription(subscription) {
         withTeamSecrets(pipelineConf, 'demo') {
           uploadBpmnDiagrams('demo')
+        }
+      }
+    }
+    onIthc {
+      def subscription = 'nonprod'
+      withSubscription(subscription) {
+        withTeamSecrets(pipelineConf, 'ithc') {
+          uploadBpmnDiagrams('ithc')
         }
       }
     }
