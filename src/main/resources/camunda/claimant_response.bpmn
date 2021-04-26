@@ -73,20 +73,20 @@
       <bpmn:incoming>Flow_0v0npem</bpmn:incoming>
       <bpmn:outgoing>Flow_17evp7q</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="Flow_1hr7okm" sourceRef="ClaimantResponseGenerateDirectionsQuestionnaire" targetRef="ClaimantResponseConfirmsToProceedNotifyRespondentSolicitor1" />
+    <bpmn:sequenceFlow id="Flow_1hr7okm" sourceRef="ClaimantResponseGenerateDirectionsQuestionnaire" targetRef="ClaimantConfirmsToProceedNotifyRespondentSolicitor1" />
     <bpmn:sequenceFlow id="Flow_17evp7q" sourceRef="NotifyRoboticsOnCaseHandedOffline" targetRef="Activity_1cweuly" />
     <bpmn:exclusiveGateway id="Gateway_PROCEED_OR_NOT_PROCEED">
       <bpmn:incoming>Flow_0veyd24</bpmn:incoming>
       <bpmn:outgoing>Flow_FULL_DEFENCE_NOT_PROCEED</bpmn:outgoing>
       <bpmn:outgoing>Flow_FULL_DEFENCE_PROCEED</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="Flow_FULL_DEFENCE_NOT_PROCEED" sourceRef="Gateway_PROCEED_OR_NOT_PROCEED" targetRef="ClaimantResponseConfirmsNotToProceedNotifyRespondentSolicitor1">
+    <bpmn:sequenceFlow id="Flow_FULL_DEFENCE_NOT_PROCEED" sourceRef="Gateway_PROCEED_OR_NOT_PROCEED" targetRef="ClaimantConfirmsNotToProceedNotifyRespondentSolicitor1">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${flowState == "MAIN.FULL_DEFENCE_NOT_PROCEED"}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_FULL_DEFENCE_PROCEED" sourceRef="Gateway_PROCEED_OR_NOT_PROCEED" targetRef="ClaimantResponseGenerateDirectionsQuestionnaire">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${flowState == "MAIN.FULL_DEFENCE_PROCEED"}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:serviceTask id="ClaimantResponseConfirmsToProceedNotifyRespondentSolicitor1" name="Notify respondent solicitor 1" camunda:type="external" camunda:topic="processCaseEvent">
+    <bpmn:serviceTask id="ClaimantConfirmsToProceedNotifyRespondentSolicitor1" name="Notify respondent solicitor 1" camunda:type="external" camunda:topic="processCaseEvent">
       <bpmn:extensionElements>
         <camunda:inputOutput>
           <camunda:inputParameter name="caseEvent">NOTIFY_RESPONDENT_SOLICITOR1_FOR_CLAIMANT_CONFIRMS_TO_PROCEED</camunda:inputParameter>
@@ -95,8 +95,8 @@
       <bpmn:incoming>Flow_1hr7okm</bpmn:incoming>
       <bpmn:outgoing>Flow_1fxy5qy</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="Flow_1fxy5qy" sourceRef="ClaimantResponseConfirmsToProceedNotifyRespondentSolicitor1" targetRef="NotifyRoboticsOnCaseHandedOffline" />
-    <bpmn:serviceTask id="ClaimantResponseConfirmsNotToProceedNotifyRespondentSolicitor1" name="Notify respondent solicitor 1" camunda:type="external" camunda:topic="processCaseEvent">
+    <bpmn:sequenceFlow id="Flow_1fxy5qy" sourceRef="ClaimantConfirmsToProceedNotifyRespondentSolicitor1" targetRef="NotifyRoboticsOnCaseHandedOffline" />
+    <bpmn:serviceTask id="ClaimantConfirmsNotToProceedNotifyRespondentSolicitor1" name="Notify respondent solicitor 1" camunda:type="external" camunda:topic="processCaseEvent">
       <bpmn:extensionElements>
         <camunda:inputOutput>
           <camunda:inputParameter name="caseEvent">NOTIFY_RESPONDENT_SOLICITOR1_FOR_CLAIMANT_CONFIRMS_NOT_TO_PROCEED</camunda:inputParameter>
@@ -105,7 +105,7 @@
       <bpmn:incoming>Flow_FULL_DEFENCE_NOT_PROCEED</bpmn:incoming>
       <bpmn:outgoing>Flow_0v0npem</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="Flow_0v0npem" sourceRef="ClaimantResponseConfirmsNotToProceedNotifyRespondentSolicitor1" targetRef="NotifyRoboticsOnCaseHandedOffline" />
+    <bpmn:sequenceFlow id="Flow_0v0npem" sourceRef="ClaimantConfirmsNotToProceedNotifyRespondentSolicitor1" targetRef="NotifyRoboticsOnCaseHandedOffline" />
     <bpmn:textAnnotation id="TextAnnotation_1cdav8i">
       <bpmn:text>Applicant confirms to proceed</bpmn:text>
     </bpmn:textAnnotation>
@@ -194,10 +194,10 @@
       <bpmndi:BPMNShape id="Activity_14sbez9_di" bpmnElement="Activity_1cweuly">
         <dc:Bounds x="1170" y="217" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1typ2td_di" bpmnElement="ClaimantResponseConfirmsToProceedNotifyRespondentSolicitor1">
+      <bpmndi:BPMNShape id="Activity_1typ2td_di" bpmnElement="ClaimantConfirmsToProceedNotifyRespondentSolicitor1">
         <dc:Bounds x="860" y="80" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0n07bsp_di" bpmnElement="ClaimantResponseConfirmsNotToProceedNotifyRespondentSolicitor1">
+      <bpmndi:BPMNShape id="Activity_0n07bsp_di" bpmnElement="ClaimantConfirmsNotToProceedNotifyRespondentSolicitor1">
         <dc:Bounds x="860" y="217" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_15wxp1o_di" bpmnElement="NotifyRoboticsOnCaseHandedOffline">
