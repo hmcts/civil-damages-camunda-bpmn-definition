@@ -76,8 +76,8 @@
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_1mak1f7</bpmn:incoming>
       <bpmn:incoming>Flow_0iqgyg8</bpmn:incoming>
-      <bpmn:incoming>Flow_1jt9mf9</bpmn:incoming>
       <bpmn:incoming>Flow_0mdk6wm</bpmn:incoming>
+      <bpmn:incoming>Flow_1fwd5wq</bpmn:incoming>
       <bpmn:outgoing>Flow_08x3izf</bpmn:outgoing>
     </bpmn:callActivity>
     <bpmn:serviceTask id="CreateClaimProceedsOfflineNotifyApplicantSolicitor1ForUnRepresentedSolicitor" name="Notify applicant solicitor 1" camunda:type="external" camunda:topic="processCaseEvent">
@@ -116,7 +116,7 @@
       <bpmn:incoming>Flow_1uhc41o</bpmn:incoming>
       <bpmn:outgoing>Flow_154avkv</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="CreateClaimProceedsOfflineNotifyApplicantSolicitor1ForUnRegisterdFirm" name="Notify applicant solicitor 1" camunda:type="external" camunda:topic="processCaseEvent">
+    <bpmn:serviceTask id="CreateClaimProceedsOfflineNotifyApplicantSolicitor1ForUnRegisteredFirm" name="Notify applicant solicitor 1" camunda:type="external" camunda:topic="processCaseEvent">
       <bpmn:extensionElements>
         <camunda:inputOutput>
           <camunda:inputParameter name="caseEvent">NOTIFY_APPLICANT_SOLICITOR1_FOR_UNREGISTERD_SOLICITOR</camunda:inputParameter>
@@ -145,14 +145,13 @@
     <bpmn:sequenceFlow id="Flow_1mjmvjy" name="Respondent 1 represented and registered" sourceRef="Gateway_1i24lv2" targetRef="IssueClaim">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${flowState == "MAIN.PENDING_CLAIM_ISSUED"}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_1av9hkz" sourceRef="CreateClaimPaymentFailedNotifyApplicantSolicitor1" targetRef="PaymentFailed" />
     <bpmn:sequenceFlow id="Flow_0oy1b4w" sourceRef="Activity_032r20h" targetRef="CaseAssignmentToApplicantSolicitor1" />
     <bpmn:sequenceFlow id="Flow_0eps4bo" sourceRef="CreateClaimMakePayment" targetRef="Gateway_0ea6cjs" />
-    <bpmn:sequenceFlow id="Flow_05b1yo7" name="Payment failure" sourceRef="Gateway_0ea6cjs" targetRef="CreateClaimPaymentFailedNotifyApplicantSolicitor1">
+    <bpmn:sequenceFlow id="Flow_05b1yo7" name="Payment failure" sourceRef="Gateway_0ea6cjs" targetRef="PaymentFailed">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${flowState == "MAIN.PAYMENT_FAILED"|| flowState == "MAIN.PENDING_CLAIM_ISSUED_PAYMENT_FAILED"}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_0ske5li" name="Payment successful" sourceRef="Gateway_0ea6cjs" targetRef="GenerateClaimForm">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${flowState == "MAIN.PAYMENT_SUCCESSFUL"||flowState == "MAIN.PENDING_CLAIM_ISSUED_PAYMENT_SUCCESSFUL"}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${flowState == "MAIN.PAYMENT_SUCCESSFUL" || flowState == "MAIN.PENDING_CLAIM_ISSUED_PAYMENT_SUCCESSFUL" }</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_1fr3g5j" sourceRef="GenerateClaimForm" targetRef="Gateway_1i24lv2" />
     <bpmn:sequenceFlow id="Flow_1uhc41o" name="Respondent 1 not represented" sourceRef="Gateway_1i24lv2" targetRef="ProceedOfflineForUnRepresentedSolicitor">
@@ -163,32 +162,33 @@
     <bpmn:sequenceFlow id="Flow_1ct7l4z" name="Respondent 1 not registered in myhmcts" sourceRef="Gateway_1i24lv2" targetRef="ProceedOflineForUnregisteredFirm">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${flowState == "MAIN.PENDING_CLAIM_ISSUED_UNREGISTERED_DEFENDANT"}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_0ulibzm" sourceRef="ProceedOflineForUnregisteredFirm" targetRef="CreateClaimProceedsOfflineNotifyApplicantSolicitor1ForUnRegisterdFirm" />
-    <bpmn:sequenceFlow id="Flow_1rm1qw9" sourceRef="CreateClaimProceedsOfflineNotifyApplicantSolicitor1ForUnRegisterdFirm" targetRef="NotifyRoboticsOnCaseHandedOfflineForUnregisteredFirm" />
+    <bpmn:sequenceFlow id="Flow_0ulibzm" sourceRef="ProceedOflineForUnregisteredFirm" targetRef="CreateClaimProceedsOfflineNotifyApplicantSolicitor1ForUnRegisteredFirm" />
+    <bpmn:sequenceFlow id="Flow_1rm1qw9" sourceRef="CreateClaimProceedsOfflineNotifyApplicantSolicitor1ForUnRegisteredFirm" targetRef="NotifyRoboticsOnCaseHandedOfflineForUnregisteredFirm" />
     <bpmn:sequenceFlow id="Flow_0iqgyg8" sourceRef="NotifyRoboticsOnCaseHandedOfflineForUnregisteredFirm" targetRef="Activity_19rrcw0" />
     <bpmn:sequenceFlow id="Flow_154avkv" sourceRef="ProceedOfflineForUnRepresentedSolicitor" targetRef="CreateClaimProceedsOfflineNotifyApplicantSolicitor1ForUnRepresentedSolicitor" />
-    <bpmn:sequenceFlow id="Flow_1jt9mf9" sourceRef="PaymentFailed" targetRef="Activity_19rrcw0" />
+    <bpmn:sequenceFlow id="Flow_1jt9mf9" sourceRef="PaymentFailed" targetRef="CreateClaimPaymentFailedNotifyApplicantSolicitor1" />
     <bpmn:sequenceFlow id="Flow_0mdk6wm" sourceRef="IssueClaim" targetRef="Activity_19rrcw0" />
     <bpmn:endEvent id="Event_1irqmkk">
       <bpmn:incoming>Flow_08x3izf</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:serviceTask id="PaymentFailed" name="Payment failed" camunda:type="external" camunda:topic="processCaseEvent">
-      <bpmn:extensionElements>
-        <camunda:inputOutput>
-          <camunda:inputParameter name="caseEvent">PAYMENT_FAILED</camunda:inputParameter>
-        </camunda:inputOutput>
-      </bpmn:extensionElements>
-      <bpmn:incoming>Flow_1av9hkz</bpmn:incoming>
-      <bpmn:outgoing>Flow_1jt9mf9</bpmn:outgoing>
-    </bpmn:serviceTask>
     <bpmn:serviceTask id="CreateClaimPaymentFailedNotifyApplicantSolicitor1" name="Notify applicant solicitor 1" camunda:type="external" camunda:topic="processCaseEvent">
       <bpmn:extensionElements>
         <camunda:inputOutput>
           <camunda:inputParameter name="caseEvent">NOTIFY_APPLICANT_SOLICITOR1_FOR_FAILED_PAYMENT</camunda:inputParameter>
         </camunda:inputOutput>
       </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1jt9mf9</bpmn:incoming>
+      <bpmn:outgoing>Flow_1fwd5wq</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1fwd5wq" sourceRef="CreateClaimPaymentFailedNotifyApplicantSolicitor1" targetRef="Activity_19rrcw0" />
+    <bpmn:serviceTask id="PaymentFailed" name="Payment failed" camunda:type="external" camunda:topic="processCaseEvent">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="caseEvent">PAYMENT_FAILED</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_05b1yo7</bpmn:incoming>
-      <bpmn:outgoing>Flow_1av9hkz</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1jt9mf9</bpmn:outgoing>
     </bpmn:serviceTask>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
@@ -201,9 +201,8 @@
         <di:waypoint x="1490" y="430" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1jt9mf9_di" bpmnElement="Flow_1jt9mf9">
-        <di:waypoint x="1470" y="550" />
-        <di:waypoint x="1540" y="550" />
-        <di:waypoint x="1540" y="470" />
+        <di:waypoint x="1170" y="550" />
+        <di:waypoint x="1240" y="550" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_154avkv_di" bpmnElement="Flow_154avkv">
         <di:waypoint x="1170" y="240" />
@@ -260,9 +259,9 @@
       <bpmndi:BPMNEdge id="Flow_05b1yo7_di" bpmnElement="Flow_05b1yo7">
         <di:waypoint x="740" y="425" />
         <di:waypoint x="740" y="550" />
-        <di:waypoint x="1230" y="550" />
+        <di:waypoint x="1070" y="550" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="736" y="573" width="77" height="14" />
+          <dc:Bounds x="729" y="573" width="77" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0eps4bo_di" bpmnElement="Flow_0eps4bo">
@@ -272,10 +271,6 @@
       <bpmndi:BPMNEdge id="Flow_0oy1b4w_di" bpmnElement="Flow_0oy1b4w">
         <di:waypoint x="390" y="400" />
         <di:waypoint x="440" y="400" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1av9hkz_di" bpmnElement="Flow_1av9hkz">
-        <di:waypoint x="1330" y="550" />
-        <di:waypoint x="1370" y="550" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1mjmvjy_di" bpmnElement="Flow_1mjmvjy">
         <di:waypoint x="940" y="355" />
@@ -301,6 +296,11 @@
       <bpmndi:BPMNEdge id="Flow_1yheet4_di" bpmnElement="Flow_1yheet4">
         <di:waypoint x="540" y="400" />
         <di:waypoint x="580" y="400" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1fwd5wq_di" bpmnElement="Flow_1fwd5wq">
+        <di:waypoint x="1340" y="550" />
+        <di:waypoint x="1540" y="550" />
+        <di:waypoint x="1540" y="470" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Event_0yfoky6_di" bpmnElement="Event_0yfoky6">
         <dc:Bounds x="212" y="382" width="36" height="36" />
@@ -347,7 +347,7 @@
       <bpmndi:BPMNShape id="Activity_0swtrb3_di" bpmnElement="ProceedOfflineForUnRepresentedSolicitor">
         <dc:Bounds x="1070" y="200" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1r34fph_di" bpmnElement="CreateClaimProceedsOfflineNotifyApplicantSolicitor1ForUnRegisterdFirm">
+      <bpmndi:BPMNShape id="Activity_1r34fph_di" bpmnElement="CreateClaimProceedsOfflineNotifyApplicantSolicitor1ForUnRegisteredFirm">
         <dc:Bounds x="1230" y="290" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1g533cz_di" bpmnElement="NotifyRoboticsOnCaseHandedOfflineForUnregisteredFirm">
@@ -356,11 +356,11 @@
       <bpmndi:BPMNShape id="Event_1irqmkk_di" bpmnElement="Event_1irqmkk">
         <dc:Bounds x="1632" y="412" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1x0zlds_di" bpmnElement="PaymentFailed">
-        <dc:Bounds x="1370" y="510" width="100" height="80" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_13o0s7h_di" bpmnElement="CreateClaimPaymentFailedNotifyApplicantSolicitor1">
-        <dc:Bounds x="1230" y="510" width="100" height="80" />
+        <dc:Bounds x="1240" y="510" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1x0zlds_di" bpmnElement="PaymentFailed">
+        <dc:Bounds x="1070" y="510" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0x002k6_di" bpmnElement="Event_0x002k6">
         <dc:Bounds x="322" y="342" width="36" height="36" />
