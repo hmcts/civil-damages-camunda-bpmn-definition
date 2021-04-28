@@ -48,9 +48,9 @@ class CreateClaimTest extends BpmnBaseTest {
     private static final String CASE_ASSIGNMENT_ACTIVITY = "CaseAssignmentToApplicantSolicitor1";
 
     enum FlowState {
-        PENDING_CLAIM_ISSUED_PAYMENT_FAILED,
+        CLAIM_ISSUED_PAYMENT_FAILED,
         PAYMENT_FAILED,
-        PENDING_CLAIM_ISSUED_PAYMENT_SUCCESSFUL,
+        CLAIM_ISSUED_PAYMENT_SUCCESSFUL,
         PAYMENT_SUCCESSFUL,
         PENDING_CLAIM_ISSUED,
         PENDING_CASE_ISSUED,
@@ -94,7 +94,7 @@ class CreateClaimTest extends BpmnBaseTest {
             completeCaseAssignment(variables);
 
             //complete the payment
-            variables.putValue(FLOW_STATE, FlowState.PENDING_CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName());
+            variables.putValue(FLOW_STATE, FlowState.CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName());
             ExternalTask paymentTask = assertNextExternalTask(PROCESS_PAYMENT_TOPIC);
             assertCompleteExternalTask(
                 paymentTask,
@@ -158,7 +158,7 @@ class CreateClaimTest extends BpmnBaseTest {
             completeCaseAssignment(variables);
 
             //complete the payment
-            variables.putValue(FLOW_STATE, FlowState.PENDING_CLAIM_ISSUED_PAYMENT_FAILED.fullName());
+            variables.putValue(FLOW_STATE, FlowState.CLAIM_ISSUED_PAYMENT_FAILED.fullName());
             ExternalTask paymentTask = assertNextExternalTask(PROCESS_PAYMENT_TOPIC);
             assertCompleteExternalTask(
                 paymentTask,
@@ -218,7 +218,7 @@ class CreateClaimTest extends BpmnBaseTest {
             completeCaseAssignment(variables);
 
             //complete the payment
-            variables.putValue(FLOW_STATE, FlowState.PENDING_CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName());
+            variables.putValue(FLOW_STATE, FlowState.CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName());
             ExternalTask paymentTask = assertNextExternalTask(PROCESS_PAYMENT_TOPIC);
             assertCompleteExternalTask(
                 paymentTask,
@@ -297,7 +297,7 @@ class CreateClaimTest extends BpmnBaseTest {
             completeCaseAssignment(variables);
 
             //complete the payment
-            variables.putValue(FLOW_STATE, FlowState.PENDING_CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName());
+            variables.putValue(FLOW_STATE, FlowState.CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName());
             ExternalTask paymentTask = assertNextExternalTask(PROCESS_PAYMENT_TOPIC);
             assertCompleteExternalTask(
                 paymentTask,
@@ -351,7 +351,7 @@ class CreateClaimTest extends BpmnBaseTest {
 
             assertNoExternalTasksLeft();
         }
-        
+
         @Test
         void shouldAbort_whenStartBusinessProcessThrowsAnError() {
             //assert process has started
