@@ -98,7 +98,7 @@
       <bpmn:incoming>Flow_1mjmvjy</bpmn:incoming>
       <bpmn:outgoing>Flow_0mdk6wm</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="ProceedOflineForUnregisteredFirm" name="Proceed offline (Unregistered Firm)" camunda:type="external" camunda:topic="processCaseEvent">
+    <bpmn:serviceTask id="ProceedOfflineForUnregisteredFirm" name="Proceed offline (Unregistered Firm)" camunda:type="external" camunda:topic="processCaseEvent">
       <bpmn:extensionElements>
         <camunda:inputOutput>
           <camunda:inputParameter name="caseEvent">PROCEEDS_IN_HERITAGE_SYSTEM</camunda:inputParameter>
@@ -143,7 +143,7 @@
     <bpmn:sequenceFlow id="Flow_08x3izf" sourceRef="Activity_19rrcw0" targetRef="Event_1irqmkk" />
     <bpmn:sequenceFlow id="Flow_1mak1f7" sourceRef="NotifyRoboticsOnCaseHandedOffline" targetRef="Activity_19rrcw0" />
     <bpmn:sequenceFlow id="Flow_1mjmvjy" name="Respondent 1 represented and registered" sourceRef="Gateway_1i24lv2" targetRef="IssueClaim">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${flowState == "MAIN.PENDING_CLAIM_ISSUED"}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${flowState == "MAIN.PENDING_CLAIM_ISSUED" || flowState =="MAIN.PENDING_CASE_ISSUED"}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_0oy1b4w" sourceRef="Activity_032r20h" targetRef="CaseAssignmentToApplicantSolicitor1" />
     <bpmn:sequenceFlow id="Flow_0eps4bo" sourceRef="CreateClaimMakePayment" targetRef="Gateway_0ea6cjs" />
@@ -159,10 +159,10 @@
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_03t3ygq" sourceRef="CreateClaimProceedsOfflineNotifyApplicantSolicitor1ForUnRepresentedSolicitor" targetRef="NotifyRoboticsOnCaseHandedOffline" />
     <bpmn:sequenceFlow id="Flow_0o4v7r8" sourceRef="Event_0x002k6" targetRef="Event_1muwoc1" />
-    <bpmn:sequenceFlow id="Flow_1ct7l4z" name="Respondent 1 not registered in myhmcts" sourceRef="Gateway_1i24lv2" targetRef="ProceedOflineForUnregisteredFirm">
+    <bpmn:sequenceFlow id="Flow_1ct7l4z" name="Respondent 1 not registered in myhmcts" sourceRef="Gateway_1i24lv2" targetRef="ProceedOfflineForUnregisteredFirm">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${flowState == "MAIN.PENDING_CLAIM_ISSUED_UNREGISTERED_DEFENDANT"}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_0ulibzm" sourceRef="ProceedOflineForUnregisteredFirm" targetRef="CreateClaimProceedsOfflineNotifyApplicantSolicitor1ForUnRegisteredFirm" />
+    <bpmn:sequenceFlow id="Flow_0ulibzm" sourceRef="ProceedOfflineForUnregisteredFirm" targetRef="CreateClaimProceedsOfflineNotifyApplicantSolicitor1ForUnRegisteredFirm" />
     <bpmn:sequenceFlow id="Flow_1rm1qw9" sourceRef="CreateClaimProceedsOfflineNotifyApplicantSolicitor1ForUnRegisteredFirm" targetRef="NotifyRoboticsOnCaseHandedOfflineForUnregisteredFirm" />
     <bpmn:sequenceFlow id="Flow_0iqgyg8" sourceRef="NotifyRoboticsOnCaseHandedOfflineForUnregisteredFirm" targetRef="Activity_19rrcw0" />
     <bpmn:sequenceFlow id="Flow_154avkv" sourceRef="ProceedOfflineForUnRepresentedSolicitor" targetRef="CreateClaimProceedsOfflineNotifyApplicantSolicitor1ForUnRepresentedSolicitor" />
@@ -196,6 +196,11 @@
       <bpmndi:BPMNShape id="Participant_0fyrupj_di" bpmnElement="Participant_0fyrupj" isHorizontal="true">
         <dc:Bounds x="160" y="80" width="1538" height="540" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1fwd5wq_di" bpmnElement="Flow_1fwd5wq">
+        <di:waypoint x="1340" y="550" />
+        <di:waypoint x="1540" y="550" />
+        <di:waypoint x="1540" y="470" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0mdk6wm_di" bpmnElement="Flow_0mdk6wm">
         <di:waypoint x="1170" y="430" />
         <di:waypoint x="1490" y="430" />
@@ -297,11 +302,6 @@
         <di:waypoint x="540" y="400" />
         <di:waypoint x="580" y="400" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1fwd5wq_di" bpmnElement="Flow_1fwd5wq">
-        <di:waypoint x="1340" y="550" />
-        <di:waypoint x="1540" y="550" />
-        <di:waypoint x="1540" y="470" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Event_0yfoky6_di" bpmnElement="Event_0yfoky6">
         <dc:Bounds x="212" y="382" width="36" height="36" />
         <bpmndi:BPMNLabel>
@@ -341,7 +341,7 @@
       <bpmndi:BPMNShape id="Activity_0a37k0s_di" bpmnElement="IssueClaim">
         <dc:Bounds x="1070" y="390" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0mv9of9_di" bpmnElement="ProceedOflineForUnregisteredFirm">
+      <bpmndi:BPMNShape id="Activity_0mv9of9_di" bpmnElement="ProceedOfflineForUnregisteredFirm">
         <dc:Bounds x="1070" y="290" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0swtrb3_di" bpmnElement="ProceedOfflineForUnRepresentedSolicitor">

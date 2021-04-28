@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.unspec.bpmn;
 import org.camunda.bpm.engine.externaltask.ExternalTask;
 import org.camunda.bpm.engine.variable.VariableMap;
 import org.camunda.bpm.engine.variable.Variables;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,7 +20,7 @@ class CreateClaimTest extends BpmnBaseTest {
     public static final String PROCEED_OFFLINE_FOR_UNREPRESENTED_SOLICITOR_ACTIVITY_ID
         = "ProceedOfflineForUnRepresentedSolicitor";
     public static final String PROCEED_OFFLINE_FOR_UNREGISTERED_SOLICITOR_ACTIVITY_ID
-        = "ProceedOflineForUnregisteredFirm";
+        = "ProceedOfflineForUnregisteredFirm";
     public static final String NOTIFY_ROBOTICS_ON_CASE_HANDED_OFFLINE_FOR_UNREGISTERED_FIRM
         = "NotifyRoboticsOnCaseHandedOfflineForUnregisteredFirm";
     public static final String CREATE_CLAIM_PROCEEDS_OFFLINE_NOTIFY_APPLICANT_SOLICITOR_1_ACTIVITY_ID_FOR_UNREG_FIRM
@@ -48,10 +49,14 @@ class CreateClaimTest extends BpmnBaseTest {
 
     enum FlowState {
         PENDING_CLAIM_ISSUED_PAYMENT_FAILED,
+        PAYMENT_FAILED,
         PENDING_CLAIM_ISSUED_PAYMENT_SUCCESSFUL,
+        PAYMENT_SUCCESSFUL,
         PENDING_CLAIM_ISSUED,
+        PENDING_CASE_ISSUED,
         PENDING_CLAIM_ISSUED_UNREPRESENTED_DEFENDANT,
-        PENDING_CLAIM_ISSUED_UNREGISTERED_DEFENDANT;
+        PENDING_CLAIM_ISSUED_UNREGISTERED_DEFENDANT,
+        PROCEEDS_OFFLINE_UNREPRESENTED_DEFENDANT;
 
         public String fullName() {
             return "MAIN" + "." + name();
@@ -62,286 +67,591 @@ class CreateClaimTest extends BpmnBaseTest {
         super("create_claim.bpmn", "CREATE_CLAIM_PROCESS_ID");
     }
 
-    @Test
-    void shouldSuccessfullyCompleteCreateClaim_whenPaymentWasSuccessful() {
-        //assert process has started
-        assertFalse(processInstance.isEnded());
+    @Nested
+    class PostFlowStateRename {
 
-        //assert message start event
-        assertThat(getProcessDefinitionByMessage(MESSAGE_NAME).getKey()).isEqualTo(PROCESS_ID);
+        @Test
+        void shouldSuccessfullyCompleteCreateClaim_whenPaymentWasSuccessful() {
+            //assert process has started
+            assertFalse(processInstance.isEnded());
 
-        VariableMap variables = Variables.createVariables();
+            //assert message start event
+            assertThat(getProcessDefinitionByMessage(MESSAGE_NAME).getKey()).isEqualTo(PROCESS_ID);
 
-        //complete the start business process
-        ExternalTask startBusiness = assertNextExternalTask(START_BUSINESS_TOPIC);
-        assertCompleteExternalTask(
-            startBusiness,
-            START_BUSINESS_TOPIC,
-            START_BUSINESS_EVENT,
-            START_BUSINESS_ACTIVITY,
-            variables
-        );
+            VariableMap variables = Variables.createVariables();
 
-        //complete the case assignment process
-        completeCaseAssignment(variables);
+            //complete the start business process
+            ExternalTask startBusiness = assertNextExternalTask(START_BUSINESS_TOPIC);
+            assertCompleteExternalTask(
+                startBusiness,
+                START_BUSINESS_TOPIC,
+                START_BUSINESS_EVENT,
+                START_BUSINESS_ACTIVITY,
+                variables
+            );
 
-        //complete the payment
-        variables.putValue(FLOW_STATE, FlowState.PENDING_CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName());
-        ExternalTask paymentTask = assertNextExternalTask(PROCESS_PAYMENT_TOPIC);
-        assertCompleteExternalTask(
-            paymentTask,
-            PROCESS_PAYMENT_TOPIC,
-            MAKE_PBA_PAYMENT_EVENT,
-            MAKE_PAYMENT_ACTIVITY_ID,
-            variables
-        );
+            //complete the case assignment process
+            completeCaseAssignment(variables);
 
-        //complete the document generation
-        variables.putValue(FLOW_STATE, FlowState.PENDING_CLAIM_ISSUED.fullName());
-        ExternalTask documentGeneration = assertNextExternalTask(PROCESS_CASE_EVENT);
-        assertCompleteExternalTask(
-            documentGeneration,
-            PROCESS_CASE_EVENT,
-            GENERATE_CLAIM_FORM,
-            CLAIM_FORM_ACTIVITY_ID,
-            variables
-        );
+            //complete the payment
+            variables.putValue(FLOW_STATE, FlowState.PENDING_CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName());
+            ExternalTask paymentTask = assertNextExternalTask(PROCESS_PAYMENT_TOPIC);
+            assertCompleteExternalTask(
+                paymentTask,
+                PROCESS_PAYMENT_TOPIC,
+                MAKE_PBA_PAYMENT_EVENT,
+                MAKE_PAYMENT_ACTIVITY_ID,
+                variables
+            );
 
-        //complete the claim issue
-        ExternalTask claimIssue = assertNextExternalTask(PROCESS_CASE_EVENT);
-        assertCompleteExternalTask(
-            claimIssue,
-            PROCESS_CASE_EVENT,
-            ISSUE_CLAIM_EVENT,
-            ISSUE_CLAIM_ACTIVITY_ID,
-            variables
-        );
+            //complete the document generation
+            variables.putValue(FLOW_STATE, FlowState.PENDING_CLAIM_ISSUED.fullName());
+            ExternalTask documentGeneration = assertNextExternalTask(PROCESS_CASE_EVENT);
+            assertCompleteExternalTask(
+                documentGeneration,
+                PROCESS_CASE_EVENT,
+                GENERATE_CLAIM_FORM,
+                CLAIM_FORM_ACTIVITY_ID,
+                variables
+            );
 
-        //end business process
-        ExternalTask endBusinessProcess = assertNextExternalTask(END_BUSINESS_PROCESS);
-        completeBusinessProcess(endBusinessProcess);
+            //complete the claim issue
+            ExternalTask claimIssue = assertNextExternalTask(PROCESS_CASE_EVENT);
+            assertCompleteExternalTask(
+                claimIssue,
+                PROCESS_CASE_EVENT,
+                ISSUE_CLAIM_EVENT,
+                ISSUE_CLAIM_ACTIVITY_ID,
+                variables
+            );
 
-        assertNoExternalTasksLeft();
+            //end business process
+            ExternalTask endBusinessProcess = assertNextExternalTask(END_BUSINESS_PROCESS);
+            completeBusinessProcess(endBusinessProcess);
+
+            assertNoExternalTasksLeft();
+        }
+
+        @Test
+        void shouldSuccessfullyCompleteCreateClaim_whenPaymentFailed() {
+            //assert process has started
+            assertFalse(processInstance.isEnded());
+
+            //assert message start event
+            assertThat(getProcessDefinitionByMessage("CREATE_CLAIM").getKey())
+                .isEqualTo("CREATE_CLAIM_PROCESS_ID");
+
+            VariableMap variables = Variables.createVariables();
+            variables.putValue(FLOW_STATE, FlowState.PENDING_CLAIM_ISSUED.fullName());
+
+            //complete the start business process
+            ExternalTask startBusiness = assertNextExternalTask(START_BUSINESS_TOPIC);
+            assertCompleteExternalTask(
+                startBusiness,
+                START_BUSINESS_TOPIC,
+                START_BUSINESS_EVENT,
+                START_BUSINESS_ACTIVITY,
+                variables
+            );
+
+            //complete the case assignment process
+            completeCaseAssignment(variables);
+
+            //complete the payment
+            variables.putValue(FLOW_STATE, FlowState.PENDING_CLAIM_ISSUED_PAYMENT_FAILED.fullName());
+            ExternalTask paymentTask = assertNextExternalTask(PROCESS_PAYMENT_TOPIC);
+            assertCompleteExternalTask(
+                paymentTask,
+                PROCESS_PAYMENT_TOPIC,
+                MAKE_PBA_PAYMENT_EVENT,
+                MAKE_PAYMENT_ACTIVITY_ID,
+                variables
+            );
+
+            //complete the payment failed
+            ExternalTask paymentFailed = assertNextExternalTask(PROCESS_CASE_EVENT);
+            assertCompleteExternalTask(
+                paymentFailed,
+                PROCESS_CASE_EVENT,
+                PAYMENT_FAILED_EVENT,
+                PAYMENT_FAILED_ACTIVITY_ID,
+                variables
+            );
+
+            //complete the notification
+            ExternalTask notificationTask = assertNextExternalTask(PROCESS_CASE_EVENT);
+            assertCompleteExternalTask(
+                notificationTask,
+                PROCESS_CASE_EVENT,
+                NOTIFY_RESPONDENT_SOLICITOR_1_FAILED_PAYMENT,
+                NOTIFY_RESPONDENT_SOLICITOR_1_FAILED_PAYMENT_ACTIVITY_ID
+            );
+
+            //end business process
+            ExternalTask endBusinessProcess = assertNextExternalTask(END_BUSINESS_PROCESS);
+            completeBusinessProcess(endBusinessProcess);
+
+            assertNoExternalTasksLeft();
+        }
+
+        @Test
+        void shouldSuccessfullyCompleteCreateClaim_whenClaimTakenOfflineForUnRepresentedDefendant() {
+            //assert process has started
+            assertFalse(processInstance.isEnded());
+
+            //assert message start event
+            assertThat(getProcessDefinitionByMessage(MESSAGE_NAME).getKey()).isEqualTo(PROCESS_ID);
+
+            VariableMap variables = Variables.createVariables();
+
+            //complete the start business process
+            ExternalTask startBusiness = assertNextExternalTask(START_BUSINESS_TOPIC);
+            assertCompleteExternalTask(
+                startBusiness,
+                START_BUSINESS_TOPIC,
+                START_BUSINESS_EVENT,
+                START_BUSINESS_ACTIVITY,
+                variables
+            );
+
+            //complete the case assignment process
+            completeCaseAssignment(variables);
+
+            //complete the payment
+            variables.putValue(FLOW_STATE, FlowState.PENDING_CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName());
+            ExternalTask paymentTask = assertNextExternalTask(PROCESS_PAYMENT_TOPIC);
+            assertCompleteExternalTask(
+                paymentTask,
+                PROCESS_PAYMENT_TOPIC,
+                MAKE_PBA_PAYMENT_EVENT,
+                MAKE_PAYMENT_ACTIVITY_ID,
+                variables
+            );
+
+            //complete the document generation
+            variables.putValue(FLOW_STATE, FlowState.PENDING_CLAIM_ISSUED_UNREPRESENTED_DEFENDANT.fullName());
+            ExternalTask documentGeneration = assertNextExternalTask(PROCESS_CASE_EVENT);
+            assertCompleteExternalTask(
+                documentGeneration,
+                PROCESS_CASE_EVENT,
+                GENERATE_CLAIM_FORM,
+                CLAIM_FORM_ACTIVITY_ID,
+                variables
+            );
+
+            //Take offline
+            ExternalTask takeOffline = assertNextExternalTask(PROCESS_CASE_EVENT);
+            assertCompleteExternalTask(
+                takeOffline,
+                PROCESS_CASE_EVENT,
+                PROCEEDS_IN_HERITAGE_SYSTEM_EVENT,
+                PROCEED_OFFLINE_FOR_UNREPRESENTED_SOLICITOR_ACTIVITY_ID
+            );
+
+            //complete the notification
+            ExternalTask notificationTask = assertNextExternalTask(PROCESS_CASE_EVENT);
+            assertCompleteExternalTask(
+                notificationTask,
+                PROCESS_CASE_EVENT,
+                NOTIFY_APPLICANT_SOLICITOR_1_CLAIM_PROCEEDS_OFFLINE,
+                NOTIFY_APPLICANT_SOLICITOR_1_CLAIM_PROCEEDS_OFFLINE_ACTIVITY_ID
+            );
+
+            //complete the Robotics notification
+            ExternalTask forRobotics = assertNextExternalTask(PROCESS_CASE_EVENT);
+            assertCompleteExternalTask(
+                forRobotics,
+                PROCESS_CASE_EVENT,
+                NOTIFY_RPA_ON_CASE_HANDED_OFFLINE,
+                NOTIFY_RPA_ON_CASE_HANDED_OFFLINE_ACTIVITY_ID
+            );
+
+            //end business process
+            ExternalTask endBusinessProcess = assertNextExternalTask(END_BUSINESS_PROCESS);
+            completeBusinessProcess(endBusinessProcess);
+
+            assertNoExternalTasksLeft();
+        }
+
+        @Test
+        void shouldSuccessfullyCompleteCreateClaim_whenClaimTakenOfflineForUnRegisteredDefendant() {
+            //assert process has started
+            assertFalse(processInstance.isEnded());
+
+            //assert message start event
+            assertThat(getProcessDefinitionByMessage(MESSAGE_NAME).getKey()).isEqualTo(PROCESS_ID);
+
+            VariableMap variables = Variables.createVariables();
+
+            //complete the start business process
+            ExternalTask startBusiness = assertNextExternalTask(START_BUSINESS_TOPIC);
+            assertCompleteExternalTask(
+                startBusiness,
+                START_BUSINESS_TOPIC,
+                START_BUSINESS_EVENT,
+                START_BUSINESS_ACTIVITY,
+                variables
+            );
+
+            //complete the case assignment process
+            completeCaseAssignment(variables);
+
+            //complete the payment
+            variables.putValue(FLOW_STATE, FlowState.PENDING_CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName());
+            ExternalTask paymentTask = assertNextExternalTask(PROCESS_PAYMENT_TOPIC);
+            assertCompleteExternalTask(
+                paymentTask,
+                PROCESS_PAYMENT_TOPIC,
+                MAKE_PBA_PAYMENT_EVENT,
+                MAKE_PAYMENT_ACTIVITY_ID,
+                variables
+            );
+
+            //complete the document generation
+            variables.putValue(FLOW_STATE, FlowState.PENDING_CLAIM_ISSUED_UNREGISTERED_DEFENDANT.fullName());
+            ExternalTask documentGeneration = assertNextExternalTask(PROCESS_CASE_EVENT);
+            assertCompleteExternalTask(
+                documentGeneration,
+                PROCESS_CASE_EVENT,
+                GENERATE_CLAIM_FORM,
+                CLAIM_FORM_ACTIVITY_ID,
+                variables
+            );
+
+            //Take offline
+            ExternalTask takeOffline = assertNextExternalTask(PROCESS_CASE_EVENT);
+            assertCompleteExternalTask(
+                takeOffline,
+                PROCESS_CASE_EVENT,
+                PROCEEDS_IN_HERITAGE_SYSTEM_EVENT,
+                PROCEED_OFFLINE_FOR_UNREGISTERED_SOLICITOR_ACTIVITY_ID
+            );
+
+            //complete the notification
+            ExternalTask notificationTask = assertNextExternalTask(PROCESS_CASE_EVENT);
+            assertCompleteExternalTask(
+                notificationTask,
+                PROCESS_CASE_EVENT,
+                NOTIFY_APPLICANT_SOLICITOR_1_FOR_UNREGISTERD_SOLICITOR_EVENT,
+                CREATE_CLAIM_PROCEEDS_OFFLINE_NOTIFY_APPLICANT_SOLICITOR_1_ACTIVITY_ID_FOR_UNREG_FIRM
+            );
+
+            //complete the Robotics notification
+            ExternalTask forRobotics = assertNextExternalTask(PROCESS_CASE_EVENT);
+            assertCompleteExternalTask(
+                forRobotics,
+                PROCESS_CASE_EVENT,
+                NOTIFY_RPA_ON_CASE_HANDED_OFFLINE,
+                NOTIFY_ROBOTICS_ON_CASE_HANDED_OFFLINE_FOR_UNREGISTERED_FIRM
+            );
+
+            //end business process
+            ExternalTask endBusinessProcess = assertNextExternalTask(END_BUSINESS_PROCESS);
+            completeBusinessProcess(endBusinessProcess);
+
+            assertNoExternalTasksLeft();
+        }
+        
+        @Test
+        void shouldAbort_whenStartBusinessProcessThrowsAnError() {
+            //assert process has started
+            assertFalse(processInstance.isEnded());
+
+            //assert message start event
+            assertThat(getProcessDefinitionByMessage(MESSAGE_NAME).getKey()).isEqualTo(PROCESS_ID);
+
+            //fail the start business process
+            ExternalTask startBusiness = assertNextExternalTask(START_BUSINESS_TOPIC);
+            assertFailExternalTask(startBusiness, START_BUSINESS_TOPIC, START_BUSINESS_EVENT, START_BUSINESS_ACTIVITY);
+
+            assertNoExternalTasksLeft();
+        }
     }
 
-    @Test
-    void shouldSuccessfullyCompleteCreateClaim_whenPaymentFailed() {
-        //assert process has started
-        assertFalse(processInstance.isEnded());
+    @Nested
+    class PreFlowStateRename {
 
-        //assert message start event
-        assertThat(getProcessDefinitionByMessage("CREATE_CLAIM").getKey())
-            .isEqualTo("CREATE_CLAIM_PROCESS_ID");
+        @Test
+        void shouldSuccessfullyCompleteCreateClaim_whenPaymentWasSuccessful() {
+            //assert process has started
+            assertFalse(processInstance.isEnded());
 
-        VariableMap variables = Variables.createVariables();
-        variables.putValue(FLOW_STATE, FlowState.PENDING_CLAIM_ISSUED.fullName());
+            //assert message start event
+            assertThat(getProcessDefinitionByMessage(MESSAGE_NAME).getKey()).isEqualTo(PROCESS_ID);
 
-        //complete the start business process
-        ExternalTask startBusiness = assertNextExternalTask(START_BUSINESS_TOPIC);
-        assertCompleteExternalTask(
-            startBusiness,
-            START_BUSINESS_TOPIC,
-            START_BUSINESS_EVENT,
-            START_BUSINESS_ACTIVITY,
-            variables
-        );
+            VariableMap variables = Variables.createVariables();
 
-        //complete the case assignment process
-        completeCaseAssignment(variables);
+            //complete the start business process
+            ExternalTask startBusiness = assertNextExternalTask(START_BUSINESS_TOPIC);
+            assertCompleteExternalTask(
+                startBusiness,
+                START_BUSINESS_TOPIC,
+                START_BUSINESS_EVENT,
+                START_BUSINESS_ACTIVITY,
+                variables
+            );
 
-        //complete the payment
-        variables.putValue(FLOW_STATE, FlowState.PENDING_CLAIM_ISSUED_PAYMENT_FAILED.fullName());
-        ExternalTask paymentTask = assertNextExternalTask(PROCESS_PAYMENT_TOPIC);
-        assertCompleteExternalTask(
-            paymentTask,
-            PROCESS_PAYMENT_TOPIC,
-            MAKE_PBA_PAYMENT_EVENT,
-            MAKE_PAYMENT_ACTIVITY_ID,
-            variables
-        );
+            //complete the case assignment process
+            completeCaseAssignment(variables);
 
-        //complete the payment failed
-        ExternalTask paymentFailed = assertNextExternalTask(PROCESS_CASE_EVENT);
-        assertCompleteExternalTask(
-            paymentFailed,
-            PROCESS_CASE_EVENT,
-            PAYMENT_FAILED_EVENT,
-            PAYMENT_FAILED_ACTIVITY_ID,
-            variables
-        );
+            //complete the payment
+            variables.putValue(FLOW_STATE, FlowState.PAYMENT_SUCCESSFUL.fullName());
+            ExternalTask paymentTask = assertNextExternalTask(PROCESS_PAYMENT_TOPIC);
+            assertCompleteExternalTask(
+                paymentTask,
+                PROCESS_PAYMENT_TOPIC,
+                MAKE_PBA_PAYMENT_EVENT,
+                MAKE_PAYMENT_ACTIVITY_ID,
+                variables
+            );
 
-        //complete the notification
-        ExternalTask notificationTask = assertNextExternalTask(PROCESS_CASE_EVENT);
-        assertCompleteExternalTask(
-            notificationTask,
-            PROCESS_CASE_EVENT,
-            NOTIFY_RESPONDENT_SOLICITOR_1_FAILED_PAYMENT,
-            NOTIFY_RESPONDENT_SOLICITOR_1_FAILED_PAYMENT_ACTIVITY_ID
-        );
+            //complete the document generation
+            variables.putValue(FLOW_STATE, FlowState.PENDING_CASE_ISSUED.fullName());
+            ExternalTask documentGeneration = assertNextExternalTask(PROCESS_CASE_EVENT);
+            assertCompleteExternalTask(
+                documentGeneration,
+                PROCESS_CASE_EVENT,
+                GENERATE_CLAIM_FORM,
+                CLAIM_FORM_ACTIVITY_ID,
+                variables
+            );
 
-        //end business process
-        ExternalTask endBusinessProcess = assertNextExternalTask(END_BUSINESS_PROCESS);
-        completeBusinessProcess(endBusinessProcess);
+            //complete the claim issue
+            ExternalTask claimIssue = assertNextExternalTask(PROCESS_CASE_EVENT);
+            assertCompleteExternalTask(
+                claimIssue,
+                PROCESS_CASE_EVENT,
+                ISSUE_CLAIM_EVENT,
+                ISSUE_CLAIM_ACTIVITY_ID,
+                variables
+            );
 
-        assertNoExternalTasksLeft();
-    }
+            //end business process
+            ExternalTask endBusinessProcess = assertNextExternalTask(END_BUSINESS_PROCESS);
+            completeBusinessProcess(endBusinessProcess);
 
-    @Test
-    void shouldSuccessfullyCompleteCreateClaim_whenClaimTakenOfflineForUnRepresentedDefendant() {
-        //assert process has started
-        assertFalse(processInstance.isEnded());
+            assertNoExternalTasksLeft();
+        }
 
-        //assert message start event
-        assertThat(getProcessDefinitionByMessage(MESSAGE_NAME).getKey()).isEqualTo(PROCESS_ID);
+        @Test
+        void shouldSuccessfullyCompleteCreateClaim_whenPaymentFailed() {
+            //assert process has started
+            assertFalse(processInstance.isEnded());
 
-        VariableMap variables = Variables.createVariables();
+            //assert message start event
+            assertThat(getProcessDefinitionByMessage("CREATE_CLAIM").getKey())
+                .isEqualTo("CREATE_CLAIM_PROCESS_ID");
 
-        //complete the start business process
-        ExternalTask startBusiness = assertNextExternalTask(START_BUSINESS_TOPIC);
-        assertCompleteExternalTask(
-            startBusiness,
-            START_BUSINESS_TOPIC,
-            START_BUSINESS_EVENT,
-            START_BUSINESS_ACTIVITY,
-            variables
-        );
+            VariableMap variables = Variables.createVariables();
+            variables.putValue(FLOW_STATE, FlowState.PENDING_CLAIM_ISSUED.fullName());
 
-        //complete the case assignment process
-        completeCaseAssignment(variables);
+            //complete the start business process
+            ExternalTask startBusiness = assertNextExternalTask(START_BUSINESS_TOPIC);
+            assertCompleteExternalTask(
+                startBusiness,
+                START_BUSINESS_TOPIC,
+                START_BUSINESS_EVENT,
+                START_BUSINESS_ACTIVITY,
+                variables
+            );
 
-        //complete the payment
-        variables.putValue(FLOW_STATE, FlowState.PENDING_CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName());
-        ExternalTask paymentTask = assertNextExternalTask(PROCESS_PAYMENT_TOPIC);
-        assertCompleteExternalTask(
-            paymentTask,
-            PROCESS_PAYMENT_TOPIC,
-            MAKE_PBA_PAYMENT_EVENT,
-            MAKE_PAYMENT_ACTIVITY_ID,
-            variables
-        );
+            //complete the case assignment process
+            completeCaseAssignment(variables);
 
-        //complete the document generation
-        variables.putValue(FLOW_STATE, FlowState.PENDING_CLAIM_ISSUED_UNREPRESENTED_DEFENDANT.fullName());
-        ExternalTask documentGeneration = assertNextExternalTask(PROCESS_CASE_EVENT);
-        assertCompleteExternalTask(
-            documentGeneration,
-            PROCESS_CASE_EVENT,
-            GENERATE_CLAIM_FORM,
-            CLAIM_FORM_ACTIVITY_ID,
-            variables
-        );
+            //complete the payment
+            variables.putValue(FLOW_STATE, FlowState.PAYMENT_FAILED.fullName());
+            ExternalTask paymentTask = assertNextExternalTask(PROCESS_PAYMENT_TOPIC);
+            assertCompleteExternalTask(
+                paymentTask,
+                PROCESS_PAYMENT_TOPIC,
+                MAKE_PBA_PAYMENT_EVENT,
+                MAKE_PAYMENT_ACTIVITY_ID,
+                variables
+            );
 
-        //Take offline
-        ExternalTask takeOffline = assertNextExternalTask(PROCESS_CASE_EVENT);
-        assertCompleteExternalTask(
-            takeOffline,
-            PROCESS_CASE_EVENT,
-            PROCEEDS_IN_HERITAGE_SYSTEM_EVENT,
-            PROCEED_OFFLINE_FOR_UNREPRESENTED_SOLICITOR_ACTIVITY_ID
-        );
+            //complete the payment failed
+            ExternalTask paymentFailed = assertNextExternalTask(PROCESS_CASE_EVENT);
+            assertCompleteExternalTask(
+                paymentFailed,
+                PROCESS_CASE_EVENT,
+                PAYMENT_FAILED_EVENT,
+                PAYMENT_FAILED_ACTIVITY_ID,
+                variables
+            );
 
-        //complete the notification
-        ExternalTask notificationTask = assertNextExternalTask(PROCESS_CASE_EVENT);
-        assertCompleteExternalTask(
-            notificationTask,
-            PROCESS_CASE_EVENT,
-            NOTIFY_APPLICANT_SOLICITOR_1_CLAIM_PROCEEDS_OFFLINE,
-            NOTIFY_APPLICANT_SOLICITOR_1_CLAIM_PROCEEDS_OFFLINE_ACTIVITY_ID
-        );
+            //complete the notification
+            ExternalTask notificationTask = assertNextExternalTask(PROCESS_CASE_EVENT);
+            assertCompleteExternalTask(
+                notificationTask,
+                PROCESS_CASE_EVENT,
+                NOTIFY_RESPONDENT_SOLICITOR_1_FAILED_PAYMENT,
+                NOTIFY_RESPONDENT_SOLICITOR_1_FAILED_PAYMENT_ACTIVITY_ID
+            );
 
-        //complete the Robotics notification
-        ExternalTask forRobotics = assertNextExternalTask(PROCESS_CASE_EVENT);
-        assertCompleteExternalTask(
-            forRobotics,
-            PROCESS_CASE_EVENT,
-            NOTIFY_RPA_ON_CASE_HANDED_OFFLINE,
-            NOTIFY_RPA_ON_CASE_HANDED_OFFLINE_ACTIVITY_ID
-        );
+            //end business process
+            ExternalTask endBusinessProcess = assertNextExternalTask(END_BUSINESS_PROCESS);
+            completeBusinessProcess(endBusinessProcess);
 
-        //end business process
-        ExternalTask endBusinessProcess = assertNextExternalTask(END_BUSINESS_PROCESS);
-        completeBusinessProcess(endBusinessProcess);
+            assertNoExternalTasksLeft();
+        }
 
-        assertNoExternalTasksLeft();
-    }
+        @Test
+        void shouldSuccessfullyCompleteCreateClaim_whenClaimTakenOfflineForUnRepresentedDefendant() {
+            //assert process has started
+            assertFalse(processInstance.isEnded());
 
-    @Test
-    void shouldSuccessfullyCompleteCreateClaim_whenClaimTakenOfflineForUnRegisteredDefendant() {
-        //assert process has started
-        assertFalse(processInstance.isEnded());
+            //assert message start event
+            assertThat(getProcessDefinitionByMessage(MESSAGE_NAME).getKey()).isEqualTo(PROCESS_ID);
 
-        //assert message start event
-        assertThat(getProcessDefinitionByMessage(MESSAGE_NAME).getKey()).isEqualTo(PROCESS_ID);
+            VariableMap variables = Variables.createVariables();
 
-        VariableMap variables = Variables.createVariables();
+            //complete the start business process
+            ExternalTask startBusiness = assertNextExternalTask(START_BUSINESS_TOPIC);
+            assertCompleteExternalTask(
+                startBusiness,
+                START_BUSINESS_TOPIC,
+                START_BUSINESS_EVENT,
+                START_BUSINESS_ACTIVITY,
+                variables
+            );
 
-        //complete the start business process
-        ExternalTask startBusiness = assertNextExternalTask(START_BUSINESS_TOPIC);
-        assertCompleteExternalTask(
-            startBusiness,
-            START_BUSINESS_TOPIC,
-            START_BUSINESS_EVENT,
-            START_BUSINESS_ACTIVITY,
-            variables
-        );
+            //complete the case assignment process
+            completeCaseAssignment(variables);
 
-        //complete the case assignment process
-        completeCaseAssignment(variables);
+            //complete the payment
+            variables.putValue(FLOW_STATE, FlowState.PAYMENT_SUCCESSFUL.fullName());
+            ExternalTask paymentTask = assertNextExternalTask(PROCESS_PAYMENT_TOPIC);
+            assertCompleteExternalTask(
+                paymentTask,
+                PROCESS_PAYMENT_TOPIC,
+                MAKE_PBA_PAYMENT_EVENT,
+                MAKE_PAYMENT_ACTIVITY_ID,
+                variables
+            );
 
-        //complete the payment
-        variables.putValue(FLOW_STATE, FlowState.PENDING_CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName());
-        ExternalTask paymentTask = assertNextExternalTask(PROCESS_PAYMENT_TOPIC);
-        assertCompleteExternalTask(
-            paymentTask,
-            PROCESS_PAYMENT_TOPIC,
-            MAKE_PBA_PAYMENT_EVENT,
-            MAKE_PAYMENT_ACTIVITY_ID,
-            variables
-        );
+            //complete the document generation
+            variables.putValue(FLOW_STATE, FlowState.PROCEEDS_OFFLINE_UNREPRESENTED_DEFENDANT.fullName());
+            ExternalTask documentGeneration = assertNextExternalTask(PROCESS_CASE_EVENT);
+            assertCompleteExternalTask(
+                documentGeneration,
+                PROCESS_CASE_EVENT,
+                GENERATE_CLAIM_FORM,
+                CLAIM_FORM_ACTIVITY_ID,
+                variables
+            );
 
-        //complete the document generation
-        variables.putValue(FLOW_STATE, FlowState.PENDING_CLAIM_ISSUED_UNREGISTERED_DEFENDANT.fullName());
-        ExternalTask documentGeneration = assertNextExternalTask(PROCESS_CASE_EVENT);
-        assertCompleteExternalTask(
-            documentGeneration,
-            PROCESS_CASE_EVENT,
-            GENERATE_CLAIM_FORM,
-            CLAIM_FORM_ACTIVITY_ID,
-            variables
-        );
+            //Take offline
+            ExternalTask takeOffline = assertNextExternalTask(PROCESS_CASE_EVENT);
+            assertCompleteExternalTask(
+                takeOffline,
+                PROCESS_CASE_EVENT,
+                PROCEEDS_IN_HERITAGE_SYSTEM_EVENT,
+                PROCEED_OFFLINE_FOR_UNREPRESENTED_SOLICITOR_ACTIVITY_ID
+            );
 
-        //Take offline
-        ExternalTask takeOffline = assertNextExternalTask(PROCESS_CASE_EVENT);
-        assertCompleteExternalTask(
-            takeOffline,
-            PROCESS_CASE_EVENT,
-            PROCEEDS_IN_HERITAGE_SYSTEM_EVENT,
-            PROCEED_OFFLINE_FOR_UNREGISTERED_SOLICITOR_ACTIVITY_ID
-        );
+            //complete the notification
+            ExternalTask notificationTask = assertNextExternalTask(PROCESS_CASE_EVENT);
+            assertCompleteExternalTask(
+                notificationTask,
+                PROCESS_CASE_EVENT,
+                NOTIFY_APPLICANT_SOLICITOR_1_CLAIM_PROCEEDS_OFFLINE,
+                NOTIFY_APPLICANT_SOLICITOR_1_CLAIM_PROCEEDS_OFFLINE_ACTIVITY_ID
+            );
 
-        //complete the notification
-        ExternalTask notificationTask = assertNextExternalTask(PROCESS_CASE_EVENT);
-        assertCompleteExternalTask(
-            notificationTask,
-            PROCESS_CASE_EVENT,
-            NOTIFY_APPLICANT_SOLICITOR_1_FOR_UNREGISTERD_SOLICITOR_EVENT,
-            CREATE_CLAIM_PROCEEDS_OFFLINE_NOTIFY_APPLICANT_SOLICITOR_1_ACTIVITY_ID_FOR_UNREG_FIRM
-        );
+            //complete the Robotics notification
+            ExternalTask forRobotics = assertNextExternalTask(PROCESS_CASE_EVENT);
+            assertCompleteExternalTask(
+                forRobotics,
+                PROCESS_CASE_EVENT,
+                NOTIFY_RPA_ON_CASE_HANDED_OFFLINE,
+                NOTIFY_RPA_ON_CASE_HANDED_OFFLINE_ACTIVITY_ID
+            );
 
-        //complete the Robotics notification
-        ExternalTask forRobotics = assertNextExternalTask(PROCESS_CASE_EVENT);
-        assertCompleteExternalTask(
-            forRobotics,
-            PROCESS_CASE_EVENT,
-            NOTIFY_RPA_ON_CASE_HANDED_OFFLINE,
-            NOTIFY_ROBOTICS_ON_CASE_HANDED_OFFLINE_FOR_UNREGISTERED_FIRM
-        );
+            //end business process
+            ExternalTask endBusinessProcess = assertNextExternalTask(END_BUSINESS_PROCESS);
+            completeBusinessProcess(endBusinessProcess);
 
-        //end business process
-        ExternalTask endBusinessProcess = assertNextExternalTask(END_BUSINESS_PROCESS);
-        completeBusinessProcess(endBusinessProcess);
+            assertNoExternalTasksLeft();
+        }
 
-        assertNoExternalTasksLeft();
+        @Test
+        void shouldSuccessfullyCompleteCreateClaim_whenClaimTakenOfflineForUnRegisteredDefendant() {
+            //assert process has started
+            assertFalse(processInstance.isEnded());
+
+            //assert message start event
+            assertThat(getProcessDefinitionByMessage(MESSAGE_NAME).getKey()).isEqualTo(PROCESS_ID);
+
+            VariableMap variables = Variables.createVariables();
+
+            //complete the start business process
+            ExternalTask startBusiness = assertNextExternalTask(START_BUSINESS_TOPIC);
+            assertCompleteExternalTask(
+                startBusiness,
+                START_BUSINESS_TOPIC,
+                START_BUSINESS_EVENT,
+                START_BUSINESS_ACTIVITY,
+                variables
+            );
+
+            //complete the case assignment process
+            completeCaseAssignment(variables);
+
+            //complete the payment
+            variables.putValue(FLOW_STATE, FlowState.PAYMENT_SUCCESSFUL.fullName());
+            ExternalTask paymentTask = assertNextExternalTask(PROCESS_PAYMENT_TOPIC);
+            assertCompleteExternalTask(
+                paymentTask,
+                PROCESS_PAYMENT_TOPIC,
+                MAKE_PBA_PAYMENT_EVENT,
+                MAKE_PAYMENT_ACTIVITY_ID,
+                variables
+            );
+
+            //complete the document generation
+            variables.putValue(FLOW_STATE, FlowState.PENDING_CLAIM_ISSUED_UNREGISTERED_DEFENDANT.fullName());
+            ExternalTask documentGeneration = assertNextExternalTask(PROCESS_CASE_EVENT);
+            assertCompleteExternalTask(
+                documentGeneration,
+                PROCESS_CASE_EVENT,
+                GENERATE_CLAIM_FORM,
+                CLAIM_FORM_ACTIVITY_ID,
+                variables
+            );
+
+            //Take offline
+            ExternalTask takeOffline = assertNextExternalTask(PROCESS_CASE_EVENT);
+            assertCompleteExternalTask(
+                takeOffline,
+                PROCESS_CASE_EVENT,
+                PROCEEDS_IN_HERITAGE_SYSTEM_EVENT,
+                PROCEED_OFFLINE_FOR_UNREGISTERED_SOLICITOR_ACTIVITY_ID
+            );
+
+            //complete the notification
+            ExternalTask notificationTask = assertNextExternalTask(PROCESS_CASE_EVENT);
+            assertCompleteExternalTask(
+                notificationTask,
+                PROCESS_CASE_EVENT,
+                NOTIFY_APPLICANT_SOLICITOR_1_FOR_UNREGISTERD_SOLICITOR_EVENT,
+                CREATE_CLAIM_PROCEEDS_OFFLINE_NOTIFY_APPLICANT_SOLICITOR_1_ACTIVITY_ID_FOR_UNREG_FIRM
+            );
+
+            //complete the Robotics notification
+            ExternalTask forRobotics = assertNextExternalTask(PROCESS_CASE_EVENT);
+            assertCompleteExternalTask(
+                forRobotics,
+                PROCESS_CASE_EVENT,
+                NOTIFY_RPA_ON_CASE_HANDED_OFFLINE,
+                NOTIFY_ROBOTICS_ON_CASE_HANDED_OFFLINE_FOR_UNREGISTERED_FIRM
+            );
+
+            //end business process
+            ExternalTask endBusinessProcess = assertNextExternalTask(END_BUSINESS_PROCESS);
+            completeBusinessProcess(endBusinessProcess);
+
+            assertNoExternalTasksLeft();
+        }
     }
 
     private void completeCaseAssignment(VariableMap variables) {
@@ -353,20 +663,5 @@ class CreateClaimTest extends BpmnBaseTest {
             CASE_ASSIGNMENT_ACTIVITY,
             variables
         );
-    }
-
-    @Test
-    void shouldAbort_whenStartBusinessProcessThrowsAnError() {
-        //assert process has started
-        assertFalse(processInstance.isEnded());
-
-        //assert message start event
-        assertThat(getProcessDefinitionByMessage(MESSAGE_NAME).getKey()).isEqualTo(PROCESS_ID);
-
-        //fail the start business process
-        ExternalTask startBusiness = assertNextExternalTask(START_BUSINESS_TOPIC);
-        assertFailExternalTask(startBusiness, START_BUSINESS_TOPIC, START_BUSINESS_EVENT, START_BUSINESS_ACTIVITY);
-
-        assertNoExternalTasksLeft();
     }
 }
