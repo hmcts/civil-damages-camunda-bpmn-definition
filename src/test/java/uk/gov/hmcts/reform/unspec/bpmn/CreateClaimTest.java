@@ -53,7 +53,7 @@ class CreateClaimTest extends BpmnBaseTest {
         CLAIM_ISSUED_PAYMENT_SUCCESSFUL,
         PAYMENT_SUCCESSFUL,
         PENDING_CLAIM_ISSUED,
-        PENDING_CASE_ISSUED,
+        AWAITING_CASE_NOTIFICATION,
         PENDING_CLAIM_ISSUED_UNREPRESENTED_DEFENDANT,
         PENDING_CLAIM_ISSUED_UNREGISTERED_DEFENDANT,
         PROCEEDS_OFFLINE_UNREPRESENTED_DEFENDANT;
@@ -406,7 +406,7 @@ class CreateClaimTest extends BpmnBaseTest {
             );
 
             //complete the document generation
-            variables.putValue(FLOW_STATE, FlowState.PENDING_CASE_ISSUED.fullName());
+            variables.putValue(FLOW_STATE, FlowState.AWAITING_CASE_NOTIFICATION.fullName());
             ExternalTask documentGeneration = assertNextExternalTask(PROCESS_CASE_EVENT);
             assertCompleteExternalTask(
                 documentGeneration,
