@@ -25,8 +25,6 @@ class CreateClaimTest extends BpmnBaseTest {
         = "NotifyRoboticsOnCaseHandedOfflineForUnregisteredFirm";
     public static final String CREATE_CLAIM_PROCEEDS_OFFLINE_NOTIFY_APPLICANT_SOLICITOR_1_ACTIVITY_ID_FOR_UNREG_FIRM
         = "CreateClaimProceedsOfflineNotifyApplicantSolicitor1ForUnRegisteredFirm";
-    public static final String NOTIFY_APPLICANT_SOLICITOR_1_FOR_UNREGISTERD_SOLICITOR_EVENT
-        = "NOTIFY_APPLICANT_SOLICITOR1_FOR_UNREGISTERD_SOLICITOR";
     private static final String MESSAGE_NAME = "CREATE_CLAIM";
     private static final String FLOW_STATE = "flowState";
     private static final String PROCESS_ID = "CREATE_CLAIM_PROCESS_ID";
@@ -332,7 +330,7 @@ class CreateClaimTest extends BpmnBaseTest {
             assertCompleteExternalTask(
                 notificationTask,
                 PROCESS_CASE_EVENT,
-                NOTIFY_APPLICANT_SOLICITOR_1_FOR_UNREGISTERD_SOLICITOR_EVENT,
+                NOTIFY_APPLICANT_SOLICITOR_1_CLAIM_PROCEEDS_OFFLINE,
                 CREATE_CLAIM_PROCEEDS_OFFLINE_NOTIFY_APPLICANT_SOLICITOR_1_ACTIVITY_ID_FOR_UNREG_FIRM
             );
 
@@ -633,7 +631,7 @@ class CreateClaimTest extends BpmnBaseTest {
             assertCompleteExternalTask(
                 notificationTask,
                 PROCESS_CASE_EVENT,
-                NOTIFY_APPLICANT_SOLICITOR_1_FOR_UNREGISTERD_SOLICITOR_EVENT,
+                NOTIFY_APPLICANT_SOLICITOR_1_CLAIM_PROCEEDS_OFFLINE,
                 CREATE_CLAIM_PROCEEDS_OFFLINE_NOTIFY_APPLICANT_SOLICITOR_1_ACTIVITY_ID_FOR_UNREG_FIRM
             );
 
