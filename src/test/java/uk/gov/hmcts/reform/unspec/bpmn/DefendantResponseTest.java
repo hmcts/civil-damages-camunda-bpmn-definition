@@ -28,7 +28,7 @@ class DefendantResponseTest extends BpmnBaseTest {
 
     public static final String FULL_DEFENCE_NOTIFY_APPLICANT_SOLICITOR_1
         = "NOTIFY_APPLICANT_SOLICITOR1_FOR_DEFENDANT_RESPONSE";
-    public static final String FULL_DEFENCE_RESPONSE_EVENT = "FULL_DEFENCE";
+    public static final String FULL_DEFENCE_RESPONSE_EVENT = "PROCESS_FULL_DEFENCE";
     public static final String FULL_DEFENCE_GENERATE_DIRECTIONS_QUESTIONNAIRE = "GENERATE_DIRECTIONS_QUESTIONNAIRE";
     private static final String FULL_DEFENCE_NOTIFICATION_ACTIVITY_ID
         = "DefendantResponseFullDefenceNotifyApplicantSolicitor1";

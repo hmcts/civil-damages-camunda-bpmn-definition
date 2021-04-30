@@ -44,7 +44,7 @@
       <bpmn:outgoing>Flow_01e5t4p</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_17u38kw" sourceRef="Gateway_1q9qem9" targetRef="FullDefenceResponse">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${flowState == "MAIN.RESPONDENT_FULL_DEFENCE"}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${flowState == "MAIN.RESPONDENT_FULL_DEFENCE" || flowState == "MAIN.FULL_DEFENCE"}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_01e5t4p" sourceRef="Gateway_1q9qem9" targetRef="ProceedOfflineForNonDefenceResponse">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${flowState == "MAIN.RESPONDENT_FULL_ADMISSION" || flowState == "MAIN.RESPONDENT_PART_ADMISSION" || flowState == "MAIN.RESPONDENT_COUNTER_CLAIM"}</bpmn:conditionExpression>
@@ -115,7 +115,7 @@
     <bpmn:serviceTask id="FullDefenceResponse" name="Full defence response" camunda:type="external" camunda:topic="processCaseEvent">
       <bpmn:extensionElements>
         <camunda:inputOutput>
-          <camunda:inputParameter name="caseEvent">FULL_DEFENCE</camunda:inputParameter>
+          <camunda:inputParameter name="caseEvent">PROCESS_FULL_DEFENCE</camunda:inputParameter>
         </camunda:inputOutput>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_17u38kw</bpmn:incoming>

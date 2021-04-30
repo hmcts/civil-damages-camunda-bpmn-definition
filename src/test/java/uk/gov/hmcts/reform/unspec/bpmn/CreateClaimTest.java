@@ -11,8 +11,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class CreateClaimTest extends BpmnBaseTest {
 
-    public static final String ISSUE_CLAIM_EVENT = "CLAIM_ISSUE";
-    public static final String PAYMENT_FAILED_EVENT = "PAYMENT_FAILED";
+    public static final String ISSUE_CLAIM_EVENT = "PROCESS_CLAIM_ISSUE";
+    public static final String PAYMENT_FAILED_EVENT = "PROCESS_PAYMENT_FAILED";
     private static final String PAYMENT_FAILED_ACTIVITY_ID = "PaymentFailed";
     private static final String ISSUE_CLAIM_ACTIVITY_ID = "IssueClaim";
     public static final String MAKE_PBA_PAYMENT_EVENT = "MAKE_PBA_PAYMENT";

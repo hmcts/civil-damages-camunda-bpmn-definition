@@ -92,7 +92,7 @@
     <bpmn:serviceTask id="IssueClaim" name="Issue Claim" camunda:type="external" camunda:topic="processCaseEvent">
       <bpmn:extensionElements>
         <camunda:inputOutput>
-          <camunda:inputParameter name="caseEvent">CLAIM_ISSUE</camunda:inputParameter>
+          <camunda:inputParameter name="caseEvent">PROCESS_CLAIM_ISSUE</camunda:inputParameter>
         </camunda:inputOutput>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_1mjmvjy</bpmn:incoming>
@@ -184,7 +184,7 @@
     <bpmn:serviceTask id="PaymentFailed" name="Payment failed" camunda:type="external" camunda:topic="processCaseEvent">
       <bpmn:extensionElements>
         <camunda:inputOutput>
-          <camunda:inputParameter name="caseEvent">PAYMENT_FAILED</camunda:inputParameter>
+          <camunda:inputParameter name="caseEvent">PROCESS_PAYMENT_FAILED</camunda:inputParameter>
         </camunda:inputOutput>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_05b1yo7</bpmn:incoming>
