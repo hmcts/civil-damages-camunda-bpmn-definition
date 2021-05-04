@@ -30,7 +30,13 @@ class ClaimDismissedTest extends BpmnBaseTest {
 
         //complete the start business process
         ExternalTask startBusiness = assertNextExternalTask(START_BUSINESS_TOPIC);
-        assertCompleteExternalTask(startBusiness, START_BUSINESS_TOPIC, START_BUSINESS_EVENT, START_BUSINESS_ACTIVITY, variables);
+        assertCompleteExternalTask(
+            startBusiness,
+            START_BUSINESS_TOPIC,
+            START_BUSINESS_EVENT,
+            START_BUSINESS_ACTIVITY,
+            variables
+        );
 
         //complete the notification to respondent
         ExternalTask respondentNotification = assertNextExternalTask(PROCESS_CASE_EVENT);
@@ -57,7 +63,6 @@ class ClaimDismissedTest extends BpmnBaseTest {
         assertNoExternalTasksLeft();
     }
 
-
     @Test
     void shouldSuccessfullyCompleteDismissClaim_whenPastClaimNotificationDeadline() {
         //assert process has started
@@ -71,7 +76,13 @@ class ClaimDismissedTest extends BpmnBaseTest {
 
         //complete the start business process
         ExternalTask startBusiness = assertNextExternalTask(START_BUSINESS_TOPIC);
-        assertCompleteExternalTask(startBusiness, START_BUSINESS_TOPIC, START_BUSINESS_EVENT, START_BUSINESS_ACTIVITY, variables);
+        assertCompleteExternalTask(
+            startBusiness,
+            START_BUSINESS_TOPIC,
+            START_BUSINESS_EVENT,
+            START_BUSINESS_ACTIVITY,
+            variables
+        );
 
         //complete the notification to respondent
         ExternalTask respondentNotification = assertNextExternalTask(PROCESS_CASE_EVENT);
@@ -98,7 +109,6 @@ class ClaimDismissedTest extends BpmnBaseTest {
         assertNoExternalTasksLeft();
     }
 
-
     @Test
     void shouldSuccessfullyCompleteDismissClaim_whenPastClaimDetailsNotificationDeadline() {
         //assert process has started
@@ -112,7 +122,13 @@ class ClaimDismissedTest extends BpmnBaseTest {
 
         //complete the start business process
         ExternalTask startBusiness = assertNextExternalTask(START_BUSINESS_TOPIC);
-        assertCompleteExternalTask(startBusiness, START_BUSINESS_TOPIC, START_BUSINESS_EVENT, START_BUSINESS_ACTIVITY, variables);
+        assertCompleteExternalTask(
+            startBusiness,
+            START_BUSINESS_TOPIC,
+            START_BUSINESS_EVENT,
+            START_BUSINESS_ACTIVITY,
+            variables
+        );
 
         //complete the notification to respondent
         ExternalTask respondentNotification = assertNextExternalTask(PROCESS_CASE_EVENT);
