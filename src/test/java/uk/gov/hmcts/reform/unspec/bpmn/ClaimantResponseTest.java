@@ -91,6 +91,24 @@ class ClaimantResponseTest extends BpmnBaseTest {
             variables
         );
 
+        //complete the notification to respondent
+        ExternalTask notifyRespondent = assertNextExternalTask(PROCESS_CASE_EVENT);
+        assertCompleteExternalTask(
+            notifyRespondent,
+            PROCESS_CASE_EVENT,
+            "NOTIFY_RESPONDENT_SOLICITOR1_FOR_CLAIMANT_CONFIRMS_TO_PROCEED",
+            "ClaimantConfirmsToProceedNotifyRespondentSolicitor1"
+        );
+
+        //complete the CC notification to applicant
+        ExternalTask notifyApplicant = assertNextExternalTask(PROCESS_CASE_EVENT);
+        assertCompleteExternalTask(
+            notifyApplicant,
+            PROCESS_CASE_EVENT,
+            "NOTIFY_RESPONDENT_SOLICITOR1_FOR_CLAIMANT_CONFIRMS_TO_PROCEED_CC",
+            "ClaimantConfirmsToProceedNotifyApplicantSolicitor1CC"
+        );
+
         //complete the Robotics notification
         ExternalTask forRobotics = assertNextExternalTask(PROCESS_CASE_EVENT);
         assertCompleteExternalTask(
@@ -158,6 +176,24 @@ class ClaimantResponseTest extends BpmnBaseTest {
             APPLICANT_SOLICITOR_1,
             APPLICANT_ACTIVITY,
             variables
+        );
+
+        //complete the notification to respondent
+        ExternalTask notifyRespondent = assertNextExternalTask(PROCESS_CASE_EVENT);
+        assertCompleteExternalTask(
+            notifyRespondent,
+            PROCESS_CASE_EVENT,
+            "NOTIFY_RESPONDENT_SOLICITOR1_FOR_CLAIMANT_CONFIRMS_NOT_TO_PROCEED",
+            "ClaimantConfirmsNotToProceedNotifyRespondentSolicitor1"
+        );
+
+        //complete the CC notification to applicant
+        ExternalTask notifyApplicant = assertNextExternalTask(PROCESS_CASE_EVENT);
+        assertCompleteExternalTask(
+            notifyApplicant,
+            PROCESS_CASE_EVENT,
+            "NOTIFY_RESPONDENT_SOLICITOR1_FOR_CLAIMANT_CONFIRMS_NOT_TO_PROCEED_CC",
+            "ClaimantConfirmsNotToProceedNotifyApplicantSolicitor1CC"
         );
 
         //complete the Robotics notification

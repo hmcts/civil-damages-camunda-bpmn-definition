@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1lfk8so" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.5.0">
-  <bpmn:process id="Process_1vrxz02" isExecutable="true">
-    <bpmn:startEvent id="Event_14vi3oh" name="Start">
+  <bpmn:process id="ADD_DEFENDANT_LITIGATION_FRIEND" isExecutable="true">
+    <bpmn:startEvent id="Event_0kkfooq" name="Start">
       <bpmn:outgoing>Flow_0h29dto</bpmn:outgoing>
       <bpmn:messageEventDefinition id="MessageEventDefinition_1eis14z" messageRef="Message_0zm9rfj" />
     </bpmn:startEvent>
@@ -33,7 +33,7 @@
       <bpmn:outgoing>Flow_000871z</bpmn:outgoing>
       <bpmn:errorEventDefinition id="ErrorEventDefinition_1a4cujn" />
     </bpmn:boundaryEvent>
-    <bpmn:sequenceFlow id="Flow_0h29dto" sourceRef="Event_14vi3oh" targetRef="Activity_18synbb" />
+    <bpmn:sequenceFlow id="Flow_0h29dto" sourceRef="Event_0kkfooq" targetRef="Activity_18synbb" />
     <bpmn:sequenceFlow id="Flow_1kz0hux" sourceRef="Activity_18synbb" targetRef="LitigationFriendAddedNotifyApplicantSolicitor1" />
     <bpmn:sequenceFlow id="Flow_000871z" sourceRef="Event_152jcow" targetRef="Event_0vj0pv5" />
     <bpmn:sequenceFlow id="Flow_0hzoh57" sourceRef="Activity_1tqimyo" targetRef="Event_0i8j65q" />
@@ -60,32 +60,32 @@
   </bpmn:process>
   <bpmn:message id="Message_0zm9rfj" name="ADD_DEFENDANT_LITIGATION_FRIEND" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
-    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1vrxz02">
-      <bpmndi:BPMNEdge id="Flow_0h29dto_di" bpmnElement="Flow_0h29dto">
-        <di:waypoint x="188" y="220" />
-        <di:waypoint x="230" y="220" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1kz0hux_di" bpmnElement="Flow_1kz0hux">
-        <di:waypoint x="330" y="217" />
-        <di:waypoint x="370" y="217" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_000871z_di" bpmnElement="Flow_000871z">
-        <di:waypoint x="280" y="159" />
-        <di:waypoint x="280" y="125" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0hzoh57_di" bpmnElement="Flow_0hzoh57">
-        <di:waypoint x="740" y="217" />
-        <di:waypoint x="772" y="217" />
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="ADD_DEFENDANT_LITIGATION_FRIEND">
+      <bpmndi:BPMNEdge id="Flow_1a2p59a_di" bpmnElement="Flow_1a2p59a">
+        <di:waypoint x="600" y="220" />
+        <di:waypoint x="640" y="220" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_17ysgkl_di" bpmnElement="Flow_17ysgkl">
         <di:waypoint x="470" y="217" />
         <di:waypoint x="500" y="217" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1a2p59a_di" bpmnElement="Flow_1a2p59a">
-        <di:waypoint x="600" y="220" />
-        <di:waypoint x="640" y="220" />
+      <bpmndi:BPMNEdge id="Flow_0hzoh57_di" bpmnElement="Flow_0hzoh57">
+        <di:waypoint x="740" y="217" />
+        <di:waypoint x="772" y="217" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Event_14vi3oh_di" bpmnElement="Event_14vi3oh">
+      <bpmndi:BPMNEdge id="Flow_000871z_di" bpmnElement="Flow_000871z">
+        <di:waypoint x="280" y="159" />
+        <di:waypoint x="280" y="125" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1kz0hux_di" bpmnElement="Flow_1kz0hux">
+        <di:waypoint x="330" y="217" />
+        <di:waypoint x="370" y="217" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0h29dto_di" bpmnElement="Flow_0h29dto">
+        <di:waypoint x="188" y="220" />
+        <di:waypoint x="230" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_14vi3oh_di" bpmnElement="Event_0kkfooq">
         <dc:Bounds x="152" y="202" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="158" y="245" width="24" height="14" />
@@ -97,11 +97,11 @@
       <bpmndi:BPMNShape id="Event_0vj0pv5_di" bpmnElement="Event_0vj0pv5">
         <dc:Bounds x="262" y="89" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0i8j65q_di" bpmnElement="Event_0i8j65q">
-        <dc:Bounds x="772" y="199" width="36" height="36" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1tqimyo_di" bpmnElement="Activity_1tqimyo">
         <dc:Bounds x="640" y="177" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0i8j65q_di" bpmnElement="Event_0i8j65q">
+        <dc:Bounds x="772" y="199" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0kyj41c_di" bpmnElement="LitigationFriendAddedNotifyApplicantSolicitor1">
         <dc:Bounds x="370" y="177" width="100" height="80" />
