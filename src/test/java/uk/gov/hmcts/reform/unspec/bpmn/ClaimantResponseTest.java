@@ -10,13 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class ClaimantResponseTest extends BpmnBaseTest {
 
-    private static final String RESPONDENT_SOLICITOR_1
-        = "NOTIFY_RESPONDENT_SOLICITOR1_FOR_CASE_TRANSFERRED_TO_LOCAL_COURT";
     private static final String PROCEED_OFFLINE_EVENT = "PROCEEDS_IN_HERITAGE_SYSTEM";
-    private static final String RESPONDENT_ACTIVITY = "ClaimantResponseNotifyRespondentSolicitor1";
-    private static final String APPLICANT_SOLICITOR_1
-        = "NOTIFY_APPLICANT_SOLICITOR1_FOR_CASE_TRANSFERRED_TO_LOCAL_COURT";
-    private static final String APPLICANT_ACTIVITY = "ClaimantResponseNotifyApplicantSolicitor1";
     private static final String GENERATE_DIRECTIONS_QUESTIONNAIRE = "GENERATE_DIRECTIONS_QUESTIONNAIRE";
     private static final String GENERATE_DIRECTIONS_QUESTIONNAIRE_ACTIVITY_ID
         = "ClaimantResponseGenerateDirectionsQuestionnaire";
@@ -58,26 +52,6 @@ class ClaimantResponseTest extends BpmnBaseTest {
             PROCESS_CASE_EVENT,
             PROCEED_OFFLINE_EVENT,
             PROCEED_OFFLINE_FOR_RESPONSE_TO_DEFENCE_ACTIVITY_ID,
-            variables
-        );
-
-        //complete the notification
-        ExternalTask forRespondent = assertNextExternalTask(PROCESS_CASE_EVENT);
-        assertCompleteExternalTask(
-            forRespondent,
-            PROCESS_CASE_EVENT,
-            RESPONDENT_SOLICITOR_1,
-            RESPONDENT_ACTIVITY,
-            variables
-        );
-
-        //complete the notification
-        ExternalTask forApplicant = assertNextExternalTask(PROCESS_CASE_EVENT);
-        assertCompleteExternalTask(
-            forApplicant,
-            PROCESS_CASE_EVENT,
-            APPLICANT_SOLICITOR_1,
-            APPLICANT_ACTIVITY,
             variables
         );
 
@@ -155,26 +129,6 @@ class ClaimantResponseTest extends BpmnBaseTest {
             PROCESS_CASE_EVENT,
             PROCEED_OFFLINE_EVENT,
             PROCEED_OFFLINE_FOR_RESPONSE_TO_DEFENCE_ACTIVITY_ID,
-            variables
-        );
-
-        //complete the notification
-        ExternalTask forRespondent = assertNextExternalTask(PROCESS_CASE_EVENT);
-        assertCompleteExternalTask(
-            forRespondent,
-            PROCESS_CASE_EVENT,
-            RESPONDENT_SOLICITOR_1,
-            RESPONDENT_ACTIVITY,
-            variables
-        );
-
-        //complete the notification
-        ExternalTask forApplicant = assertNextExternalTask(PROCESS_CASE_EVENT);
-        assertCompleteExternalTask(
-            forApplicant,
-            PROCESS_CASE_EVENT,
-            APPLICANT_SOLICITOR_1,
-            APPLICANT_ACTIVITY,
             variables
         );
 
