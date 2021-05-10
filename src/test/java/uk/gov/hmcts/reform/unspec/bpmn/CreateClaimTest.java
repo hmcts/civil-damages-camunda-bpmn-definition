@@ -44,6 +44,8 @@ class CreateClaimTest extends BpmnBaseTest {
     private static final String NOTIFY_RPA_ON_CASE_HANDED_OFFLINE_ACTIVITY_ID = "NotifyRoboticsOnCaseHandedOffline";
     private static final String CASE_ASSIGNMENT_EVENT = "ASSIGN_CASE_TO_APPLICANT_SOLICITOR1";
     private static final String CASE_ASSIGNMENT_ACTIVITY = "CaseAssignmentToApplicantSolicitor1";
+    private static final String VALIDATE_FEE_EVENT = "VALIDATE_FEE";
+    private static final String VALIDATE_FEE_ACTIVITY_ID = "ValidateClaimFee";
 
     enum FlowState {
         CLAIM_ISSUED_PAYMENT_FAILED,
@@ -90,6 +92,9 @@ class CreateClaimTest extends BpmnBaseTest {
 
             //complete the case assignment process
             completeCaseAssignment(variables);
+
+            //validate the fee
+            validateFee(variables);
 
             //complete the payment
             variables.putValue(FLOW_STATE, FlowState.CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName());
@@ -164,6 +169,9 @@ class CreateClaimTest extends BpmnBaseTest {
             //complete the case assignment process
             completeCaseAssignment(variables);
 
+            //validate the fee
+            validateFee(variables);
+
             //complete the payment
             variables.putValue(FLOW_STATE, FlowState.CLAIM_ISSUED_PAYMENT_FAILED.fullName());
             ExternalTask paymentTask = assertNextExternalTask(PROCESS_PAYMENT_TOPIC);
@@ -223,6 +231,9 @@ class CreateClaimTest extends BpmnBaseTest {
 
             //complete the case assignment process
             completeCaseAssignment(variables);
+
+            //validate the fee
+            validateFee(variables);
 
             //complete the payment
             variables.putValue(FLOW_STATE, FlowState.CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName());
@@ -302,6 +313,9 @@ class CreateClaimTest extends BpmnBaseTest {
 
             //complete the case assignment process
             completeCaseAssignment(variables);
+
+            //validate the fee
+            validateFee(variables);
 
             //complete the payment
             variables.putValue(FLOW_STATE, FlowState.CLAIM_ISSUED_PAYMENT_SUCCESSFUL.fullName());
@@ -401,6 +415,9 @@ class CreateClaimTest extends BpmnBaseTest {
             //complete the case assignment process
             completeCaseAssignment(variables);
 
+            //validate the fee
+            validateFee(variables);
+
             //complete the payment
             variables.putValue(FLOW_STATE, FlowState.PAYMENT_SUCCESSFUL.fullName());
             ExternalTask paymentTask = assertNextExternalTask(PROCESS_PAYMENT_TOPIC);
@@ -459,7 +476,6 @@ class CreateClaimTest extends BpmnBaseTest {
                 .isEqualTo("CREATE_CLAIM_PROCESS_ID");
 
             VariableMap variables = Variables.createVariables();
-            variables.putValue(FLOW_STATE, FlowState.PENDING_CLAIM_ISSUED.fullName());
 
             //complete the start business process
             ExternalTask startBusiness = assertNextExternalTask(START_BUSINESS_TOPIC);
@@ -473,6 +489,9 @@ class CreateClaimTest extends BpmnBaseTest {
 
             //complete the case assignment process
             completeCaseAssignment(variables);
+
+            //validate the fee
+            validateFee(variables);
 
             //complete the payment
             variables.putValue(FLOW_STATE, FlowState.PAYMENT_FAILED.fullName());
@@ -533,6 +552,9 @@ class CreateClaimTest extends BpmnBaseTest {
 
             //complete the case assignment process
             completeCaseAssignment(variables);
+
+            //validate the fee
+            validateFee(variables);
 
             //complete the payment
             variables.putValue(FLOW_STATE, FlowState.PAYMENT_SUCCESSFUL.fullName());
@@ -613,6 +635,9 @@ class CreateClaimTest extends BpmnBaseTest {
             //complete the case assignment process
             completeCaseAssignment(variables);
 
+            //validate the fee
+            validateFee(variables);
+
             //complete the payment
             variables.putValue(FLOW_STATE, FlowState.PAYMENT_SUCCESSFUL.fullName());
             ExternalTask paymentTask = assertNextExternalTask(PROCESS_PAYMENT_TOPIC);
@@ -668,6 +693,17 @@ class CreateClaimTest extends BpmnBaseTest {
 
             assertNoExternalTasksLeft();
         }
+    }
+
+    private void validateFee(VariableMap variables) {
+        ExternalTask feeTask = assertNextExternalTask(PROCESS_CASE_EVENT);
+        assertCompleteExternalTask(
+            feeTask,
+            PROCESS_CASE_EVENT,
+            VALIDATE_FEE_EVENT,
+            VALIDATE_FEE_ACTIVITY_ID,
+            variables
+        );
     }
 
     private void completeCaseAssignment(VariableMap variables) {
