@@ -1,3 +1,5 @@
+# This repo is now deprecated, [civil-camunda-bpmn-definition](https://github.com/hmcts/civil-camunda-bpmn-definition) is used instead.
+
 # civil-damages-camunda-bpmn-definition
 
 Civil Damages Camunda BPMN Definition
